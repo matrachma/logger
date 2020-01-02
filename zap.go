@@ -5,7 +5,7 @@ import (
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-	lumberjack "gopkg.in/natefinch/lumberjack.v2"
+	"gopkg.in/natefinch/lumberjack.v2"
 )
 
 type zapLogger struct {
@@ -40,7 +40,7 @@ func getZapLevel(level string) zapcore.Level {
 }
 
 func newZapLogger(config Configuration) (Logger, error) {
-	cores := []zapcore.Core{}
+	var cores []zapcore.Core
 
 	if config.EnableConsole {
 		level := getZapLevel(config.ConsoleLevel)
