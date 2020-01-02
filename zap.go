@@ -1,11 +1,11 @@
 package logger
 
 import (
-	"os"
-
+	"github.com/mattn/go-colorable"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/natefinch/lumberjack.v2"
+	"os"
 )
 
 type zapLogger struct {
@@ -19,6 +19,8 @@ func getEncoder(isJSON bool) zapcore.Encoder {
 	if isJSON {
 		return zapcore.NewJSONEncoder(encoderConfig)
 	}
+
+	encoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
 	return zapcore.NewConsoleEncoder(encoderConfig)
 }
 
@@ -41,10 +43,15 @@ func getZapLevel(level string) zapcore.Level {
 
 func newZapLogger(config Configuration) (Logger, error) {
 	var cores []zapcore.Core
+	var writer zapcore.WriteSyncer
 
 	if config.EnableConsole {
 		level := getZapLevel(config.ConsoleLevel)
-		writer := zapcore.Lock(os.Stdout)
+		if config.EnableColor {
+			writer = zapcore.AddSync(colorable.NewColorableStdout())
+		} else {
+			writer = zapcore.Lock(os.Stdout)
+		}
 		core := zapcore.NewCore(getEncoder(config.ConsoleJSONFormat), writer, level)
 		cores = append(cores, core)
 	}
