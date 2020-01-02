@@ -1,4 +1,4 @@
-module github.com/amitrai48/logger
+module github.com/matrachma/logger
 
 require (
 	github.com/sirupsen/logrus v1.3.0
